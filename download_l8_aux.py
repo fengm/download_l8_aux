@@ -27,9 +27,13 @@ def _dl_cmg(date, data_dir):
 
 		fn = re.search(re_pattern, html).group(0)
 		url = baseurl + fn
-		call(['wget', '-P', data_dir, url])
+		call(['wget', '-P', '-a', data_dir, url])
 
 def _ftp_download(ftp, path, f_out):
+	if os.path.exists(f_out) and os.path.getsize(f_out) > 0:
+		# skip existed file
+		return
+
 	with open(f_out, 'wb') as _fo:
 		ftp.retrbinary('RETR ' + path, _fo.write)
 
