@@ -31,8 +31,8 @@ def _combine(d_inp, date, d_out):
 def _dl_cmg(date, data_dir):
 	"""Download CMG products."""
 	import requests
-	import os
 	import re
+	import os
 	from subprocess import call
 
 	_host = 'e4ftl01.cr.usgs.gov'
@@ -49,18 +49,11 @@ def _dl_cmg(date, data_dir):
 		url = baseurl + fn
 
 		fo = os.path.join(data_dir, fn)
-		if os.path.exists(fo) and os.path.exists(fo):
-			continue
+		os.path.exists(fo) and os.remove(fo)
 
 		call(['wget', '-P', data_dir, url])
 
 def _ftp_download(ftp, path, f_out):
-	import os
-
-	if os.path.exists(f_out) and os.path.getsize(f_out) > 0:
-		# skip existed file
-		return
-
 	with open(f_out, 'wb') as _fo:
 		ftp.retrbinary('RETR ' + path, _fo.write)
 
@@ -98,8 +91,6 @@ def _to_date(d):
 def main():
 	_opts = _usage()
 
-	_d_out = _opts.output
-
 	import datetime
 	import os
 
@@ -116,6 +107,8 @@ def main():
 
 	while _d <= _d2:
 		print '+ date', _d
+
+		_d_out = os.path.join(_opts.output, _d.strftime('%Y'))
 
 		_f_out = os.path.join(_d_out, _d.strftime('L8ANC%Y%j.hdf_fused'))
 		if not (os.path.exists(_f_out) and os.path.getsize(_f_out) > 0):
