@@ -30,7 +30,7 @@ def _combine(d_inp, date, d_out):
 	if os.path.exists(_f_out) and os.path.getsize(_f_out) > 0:
 		map(os.remove, [terra_cmg, terra_cma, aqua_cma, aqua_cmg])
 
-def _dl_cmg(date, data_dir):
+def _dl_cmg(date, data_dir, username, password):
 	"""Download CMG products."""
 	import requests
 	import re
@@ -53,7 +53,7 @@ def _dl_cmg(date, data_dir):
 		fo = os.path.join(data_dir, fn)
 		os.path.exists(fo) and os.remove(fo)
 
-		call(['wget', '--user', 'mfeng', '--password', '127321Xy', '-P', data_dir, url])
+		call(['wget', '--user', username, '--password', password, '-P', data_dir, url])
 
 def _ftp_download(ftp, path, f_out):
 	with open(f_out, 'wb') as _fo:
@@ -117,7 +117,7 @@ def main():
 
 			try:
 				_dl_cma(_d, _d_out, _opts.username, _opts.password)
-				_dl_cmg(_d, _d_out)
+				_dl_cmg(_d, _d_out, _opts.username, _opts.password)
 				_combine(_d_out, _d, _d_out)
 			except KeyboardInterrupt:
 				print '\n\n* User stopped the program'
