@@ -7,6 +7,8 @@ Description: download auxiliary data for running L8SR
 modified based on a codesnip wrote by @yannforget
 '''
 
+import logging
+
 def _combine(d_inp, date, d_out):
 	from subprocess import call
 	from glob import glob
@@ -51,7 +53,7 @@ def _dl_cmg(date, data_dir):
 		fo = os.path.join(data_dir, fn)
 		os.path.exists(fo) and os.remove(fo)
 
-		call(['wget', '-P', data_dir, url])
+		call(['wget', '--user', 'mfeng', '--password', '127321Xy', '-P', data_dir, url])
 
 def _ftp_download(ftp, path, f_out):
 	with open(f_out, 'wb') as _fo:
@@ -113,9 +115,19 @@ def main():
 		_f_out = os.path.join(_d_out, _d.strftime('L8ANC%Y%j.hdf_fused'))
 		if not (os.path.exists(_f_out) and os.path.getsize(_f_out) > 0):
 
-			_dl_cma(_d, _d_out, _opts.username, _opts.password)
-			_dl_cmg(_d, _d_out)
-			_combine(_d_out, _d, _d_out)
+			try:
+				_dl_cma(_d, _d_out, _opts.username, _opts.password)
+				_dl_cmg(_d, _d_out)
+				_combine(_d_out, _d, _d_out)
+			except KeyboardInterrupt:
+				print '\n\n* User stopped the program'
+			except Exception, err:
+				import traceback
+
+				logging.error(traceback.format_exc())
+				logging.error(str(err))
+
+				print '\n\n* Error:', err
 
 		_d += _t
 
